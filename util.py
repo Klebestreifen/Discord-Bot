@@ -7,7 +7,7 @@ def file2str(filename):
         rtn = file.read()
     return rtn
 
-config = json.loads(file2str("settings.json"))
+config = json.loads(file2str("config/settings.json"))
 igp = [re.compile(r) for r in config["ignore-pattern"]]
 
 def log(msg):
