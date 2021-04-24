@@ -7,7 +7,21 @@ def file2str(filename):
         rtn = file.read()
     return rtn
 
-config = json.loads(file2str("config/settings.json"))
+class JSON_File():
+    def __init__(self, path):
+        self.path = path
+        self.reload()
+
+    def reload(self):
+        self.data = json.loads(file2str(self.path))
+
+    def on_reload(self, func):
+        pass # TODO
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+config = JSON_File("config/settings.json")
 igp = [re.compile(r) for r in config["ignore-pattern"]]
 
 def log(msg):
