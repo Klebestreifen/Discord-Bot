@@ -12,7 +12,6 @@ class JSON_File():
 
     def __init__(self, path):
         self.path = path
-        self.on_reload_handelrs = {"last" : 0}
         self.ee = EventEmitter()
         self.reload()
 
