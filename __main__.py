@@ -1,7 +1,7 @@
 import random
 
-from util import config, log, file2str, generate_paramether_list
-from classes.Command import Command
+from util import CONFIG, log, generate_paramether_list
+from classes.command import Command
 from classes.Emojis import Emojis
 from classes.Main import Main
 
@@ -18,7 +18,7 @@ async def command_test(msg):
 @Command.register("insider", "permission.command.insider")
 async def command_insider(msg):
     params = generate_paramether_list(msg)
-    i_cats = config["insider"]
+    i_cats = CONFIG["insider"]
 
     def insider_list():
         str_i_list = "```\n"

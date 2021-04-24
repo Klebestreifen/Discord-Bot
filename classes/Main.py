@@ -1,4 +1,4 @@
-from util import config
+from util import CONFIG
 from classes.Bot import Bot
 
 class Main:
@@ -18,4 +18,4 @@ class Main:
         self.bot = Bot()
 
     def run(self):
-        self.bot.run(config["token"])
+        self.bot.run(CONFIG["token"])

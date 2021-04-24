@@ -4,7 +4,7 @@ This module contains the [Command] class and provides the
 command-infrastructure.
 """
 
-from util import config, log
+from util import CONFIG, log
 
 class Command:
     """ Discordd-Bot-Command
@@ -77,7 +77,7 @@ class Command:
         """ Returns a list with the permissions of a single role. """
         permissions = []
         try:
-            for tag in config["tags"][str(rid)]:
+            for tag in CONFIG["tags"][str(rid)]:
                 permissions.append(tag.strip().lower())
         except KeyError:
             pass

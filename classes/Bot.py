@@ -5,8 +5,8 @@ import re
 import traceback
 import sys
 
-from util import config, log, igp
-from classes.Command import Command
+from util import CONFIG, log, IGNORE_PATTERNS
+from classes.command import Command
 
 class Bot(discord.Client):
     """
@@ -28,7 +28,7 @@ class Bot(discord.Client):
                 await msg.channel.send("Wenn ich den kennen sollte, dann wende dich ans Klebi. Der hilft gerne.")
 
         def ignoredToken(m):
-            for p in igp:
+            for p in IGNORE_PATTERNS:
                 if re.match(p, m):
                     return True
             return False
@@ -44,22 +44,22 @@ class Bot(discord.Client):
                 await asyncio.sleep(1)
                 await msg.channel.send("Irgendwas stimmt hier nicht. Ich weiß leider auch nicht was...")
                 await asyncio.sleep(1)
-                await msg.channel.send(f"Hay {config['developer-mention']}! Schau dir das mal bitte an!")
+                await msg.channel.send(f"Hay {CONFIG['developer-mention']}! Schau dir das mal bitte an!")
                 await asyncio.sleep(1)
                 await msg.channel.send("Ich will ja, dass mein Code ordentlich funktioniert!")
 
-                error_user = await self.fetch_user(config["send-error-to-user-id"])
+                error_user = await self.fetch_user(CONFIG["send-error-to-user-id"])
                 await error_user.send(f"```\n{traceback.format_exc()}\n```")
     
     async def on_voice_state_update(self, member, before, after):
         def is_talk_channel(id):
-            return bool(str(channel.id) in config["talk-channels"])
+            return bool(str(channel.id) in CONFIG["talk-channels"])
 
         if (before.channel != after.channel):
             channel = after.channel or before.channel
             guild = channel.guild
 
-            talk_role = get(guild.roles, id=int(config["talk-role"]))
+            talk_role = get(guild.roles, id=int(CONFIG["talk-role"]))
 
             if after.channel == None:
                 # Disconnected
