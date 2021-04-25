@@ -1,20 +1,18 @@
-import discord
-from discord.utils import get
 import asyncio
 import re
 import traceback
-import sys
+import discord
+from discord.utils import get
 
 from misc import log
 from command import Command
 from main_singleton import Main
 
 class Bot(discord.Client):
-    """
-        Discord-Bot Kenrnel class
-    """
+    """ Discord-Bot Kenrnel class """
+
     async def on_ready(self):
-        log("Bot ready")
+        log("Bot online")
 
     async def on_message(self, msg):
         async def execute(msg):
@@ -28,14 +26,16 @@ class Bot(discord.Client):
                 await asyncio.sleep(1)
                 await msg.channel.send("Wenn ich den kennen sollte, dann wende dich ans Klebi. Der hilft gerne.")
 
-        def ignoredToken(m):
+        def îs_ignored_token(m):
             for p in Main.get().igp:
                 if re.match(p, m):
                     return True
             return False
 
-        if msg.author.bot: return
-        if ignoredToken(msg.content): return
+        if msg.author.bot:
+            return
+        if îs_ignored_token(msg.content):
+            return
         if msg.content.startswith("!") and len(msg.content) >= 2 :
             await asyncio.sleep(0.5)
             try:
@@ -53,21 +53,27 @@ class Bot(discord.Client):
                 await error_user.send(f"```\n{traceback.format_exc()}\n```")
     
     async def on_voice_state_update(self, member, before, after):
-        def is_talk_channel(id):
-            return bool(str(channel.id) in Main.get().config["talk-channels"])
+        def is_talk_channel(cid):
+            return bool(str(cid) in Main.get().config["talk-channels"])
 
+        # If channel difference
         if (before.channel != after.channel):
             channel = after.channel or before.channel
             guild = channel.guild
 
             talk_role = get(guild.roles, id=int(Main.get().config["talk-role"]))
 
-            if after.channel == None:
-                # Disconnected
+            # If disconnected
+            if after.channel is None:
+                # Then remove the role
                 await member.remove_roles(talk_role)
+
+            # Else-If the new channel not in whitelist
             elif not is_talk_channel(after.channel.id):
-                # Switch to non-talk
+                # Then remove the role
                 await member.remove_roles(talk_role)
+
+            # Else garnd <@im Talk> role
             else:
-                # Connected to talk
+                # Because the user is connected to whitelisted talk
                 await member.add_roles(talk_role)
