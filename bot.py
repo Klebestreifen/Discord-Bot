@@ -2,7 +2,7 @@ import asyncio
 import re
 import traceback
 import discord
-from discord.utils import get
+from pymitter import EventEmitter
 
 from misc import log
 from command import Command
@@ -11,10 +11,23 @@ from main_singleton import Main
 class Bot(discord.Client):
     """ Discord-Bot Kenrnel class """
 
+    EVENT_READY                 = "reday"
+    EVENT_MESSAGE               = "message"
+    EVENT_USER_CONNECT_VOICE    = "userconnectvoice"
+    EVENT_USER_DISCONNECT_VOICE = "userdisconnectvoice"
+    EVENT_USER_SWITCHED_VOICE   = "userswitchedvoice"
+
+    def __init__(self, *args, **kwargs):
+        super(Bot, self).__init__(*args, **kwargs)
+        self.ee = EventEmitter()
+
     async def on_ready(self):
         log("Bot online")
+        self.ee.emit(Bot.EVENT_READY, self)
 
     async def on_message(self, msg):
+        self.ee.emit(Bot.EVENT_MESSAGE, self, msg)
+
         async def execute(msg):
             cmd_name = msg.content.split('!')[1].split(' ')[0].lower()
             log(f"Command [{cmd_name}] from [{str(msg.author)}]")
@@ -27,8 +40,8 @@ class Bot(discord.Client):
                 await msg.channel.send("Wenn ich den kennen sollte, dann wende dich ans Klebi. Der hilft gerne.")
 
         def îs_ignored_token(m):
-            for p in Main.get().igp:
-                if re.match(p, m):
+            for _p in Main.i().igp:
+                if re.match(_p, m):
                     return True
             return False
 
@@ -45,35 +58,19 @@ class Bot(discord.Client):
                 await asyncio.sleep(1)
                 await msg.channel.send("Irgendwas stimmt hier nicht. Ich weiß leider auch nicht was...")
                 await asyncio.sleep(1)
-                await msg.channel.send(f"Hay {Main.get().config['developer-mention']}! Schau dir das mal bitte an!")
+                await msg.channel.send(f"Hay {Main.i().config['developer-mention']}! Schau dir das mal bitte an!")
                 await asyncio.sleep(1)
                 await msg.channel.send("Ich will ja, dass mein Code ordentlich funktioniert!")
 
-                error_user = await self.fetch_user(Main.get().config["send-error-to-user-id"])
+                error_user = await self.fetch_user(Main.i().config["send-error-to-user-id"])
                 await error_user.send(f"```\n{traceback.format_exc()}\n```")
     
     async def on_voice_state_update(self, member, before, after):
-        def is_talk_channel(cid):
-            return bool(str(cid) in Main.get().config["talk-channels"])
-
         # If channel difference
-        if (before.channel != after.channel):
-            channel = after.channel or before.channel
-            guild = channel.guild
-
-            talk_role = get(guild.roles, id=int(Main.get().config["talk-role"]))
-
-            # If disconnected
-            if after.channel is None:
-                # Then remove the role
-                await member.remove_roles(talk_role)
-
-            # Else-If the new channel not in whitelist
-            elif not is_talk_channel(after.channel.id):
-                # Then remove the role
-                await member.remove_roles(talk_role)
-
-            # Else garnd <@im Talk> role
+        if before.channel != after.channel:
+            if before.channel is None:
+                self.ee.emit(Bot.EVENT_USER_CONNECT_VOICE, member, after.channel)
+            elif after.channel is None:
+                self.ee.emit(Bot.EVENT_USER_DISCONNECT_VOICE, member, before.channel)
             else:
-                # Because the user is connected to whitelisted talk
-                await member.add_roles(talk_role)
+                self.ee.emit(Bot.EVENT_USER_SWITCHED_VOICE, member, before.channel, after.channel)

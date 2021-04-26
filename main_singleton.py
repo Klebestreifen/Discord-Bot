@@ -3,16 +3,14 @@ from misc import log
 import re
 
 class Main():
-    """
-        Python-Main class
-    """
+    """ Python-Main class """
     _instance = None
 
-    @staticmethod
-    def get():
-        if Main._instance is None:
-            Main._instance = Main()
-        return Main._instance
+    @classmethod
+    def i(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
     #######################################################
 
@@ -32,4 +30,6 @@ class Main():
         self.config.reload()
 
     def run(self):
+        from bot_modules import load
+        load()
         self.bot.run(self.config["token"])

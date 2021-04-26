@@ -3,4 +3,4 @@ from main_singleton import Main
 
 if __name__ == "__main__":
     log("Start")
-    Main.get().run()
+    Main.i().run()
