@@ -8,7 +8,7 @@ def load():
     @Command.register("insider", "permission.command.insider")
     async def _command_insider(msg):
         params = generate_paramether_list(msg)
-        i_cats = Main.get().config["insider"]
+        i_cats = Main.i().config["insider"]
 
         def insider_list():
             str_i_list = "```\n"
