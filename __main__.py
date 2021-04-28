@@ -1,3 +1,5 @@
+""" Entry """
+
 from misc import log
 from main_singleton import Main
 
