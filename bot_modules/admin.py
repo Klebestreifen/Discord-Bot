@@ -1,4 +1,3 @@
-from misc import log
 from command import Command
 from emojis import Emojis
 from main_singleton import Main
