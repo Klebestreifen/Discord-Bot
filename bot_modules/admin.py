@@ -9,5 +9,6 @@ def load():
         await msg.channel.send(Emojis.FUGU_HAPPY)
 
     @Command.register("reload", "permission.command.reload")
-    async def _command_reload():
-        await Main.i().reload()
+    async def _command_reload(msg):
+        Main.i().reload()
+        await msg.channel.send(Emojis.FUGU_HAPPY)
