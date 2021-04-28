@@ -15,6 +15,13 @@ class JSON_File():
         self.ee = EventEmitter()
         self.reload()
 
+        from main_singleton import Main
+        main = Main.i()
+
+        @main.ee.on(Main.EVENT_RELOAD)
+        def _on_main_reload():
+            self.reload()
+
     def reload(self):
         self.data = json.loads(file2str(self.path))
         self.ee.emit(JSON_File.EVENT_RELOAD, self)
