@@ -4,11 +4,8 @@ This module contains the [Command] class and provides the
 command-infrastructure.
 """
 
-import random
-
-from misc import log, generate_paramether_list
+from misc import log
 from main_singleton import Main
-from emojis import Emojis
 
 class Command:
     """ Discordd-Bot-Command
